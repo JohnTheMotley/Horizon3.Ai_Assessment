@@ -5,12 +5,22 @@ from lib.csv_manager import CsvManager
 
 
 # application accepts a csv file to query against as a command-line argument
-assert len(sys.argv) == 2
+try:
+    assert len(sys.argv) == 3
+except:
+    print('Usage: main.py <port> <csv_filepath>')
+    sys.exit(1)
 
 try:
-    csv_data = CsvManager(sys.argv[1])
+    port = (int)(sys.argv[1])
 except:
-    print('Error loading csv data....')
+    print('Error loading PORT argument')
+    sys.exit(1)
+
+try:
+    csv_data = CsvManager(sys.argv[2])
+except:
+    print('Error loading CSV_FILEPATH argument')
     sys.exit(1)
 
         
@@ -27,4 +37,7 @@ def query_api():
     # returns a set, so convert to list before the json serialization
     return json.dumps(list(csv_data.query(ip, protocol, port)))
 
-app.run()
+# flask doesn't provide a production-quality webserver by itself
+if __name__ == "__main__":
+    from waitress import serve
+    serve(app, port=port)
