@@ -6,11 +6,15 @@ class Entry(dict):
         self.protocol = protocol
         self.port = int(port)
         # This line is to make json serialization easier
+        # Mainly prevents having to write a custom serializer and include it in dumps calls
         dict.__init__(self, ip=self.ip, protocol=self.protocol, port=self.port)
     
+    # Used to work with entries in sets as unique items
     def __hash__(self):
         return hash((self.ip, self.protocol, self.port))
     
+    # Has to be implemented or __hash__ is ignored
+    # https://docs.python.org/3/reference/datamodel.html#object.__hash__
     def __eq__(self, other):
         return self.ip == other.ip and self.protocol == other.protocol and self.port == other.port
 
@@ -23,6 +27,8 @@ class CsvManager:
 
         self.load(csv_filename)
     
+    # More fun than just loading into a database, potentially more efficient in this usecase
+    # We track entries by sets of unique entries by field value
     def add(self, entry: Entry):
         if entry not in self.all_entries:
             self.all_entries.add(entry)
@@ -39,6 +45,7 @@ class CsvManager:
             self.by_port[entry.port] = set()
         self.by_port[entry.port].add(entry)
 
+    # The set logic allows us to easily combine (AND) on query params
     def query(self, ip: str, protocol: str, port: str):
         to_ret = self.all_entries
 

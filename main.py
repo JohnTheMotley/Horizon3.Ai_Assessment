@@ -17,11 +17,14 @@ except:
 app = Flask(__name__)
 app.config['DEBUG'] = False
 
+# A single endpoint for the assessment's api
 @app.route('/', methods=['GET'])
 def query_api():
+    # shouldn't need sanitization, just accessing dicts and sets based on these
     ip = request.args.get('ip')
     protocol = request.args.get('protocol')
     port = request.args.get('port')
+    # returns a set, so convert to list before the json serialization
     return json.dumps(list(csv_data.query(ip, protocol, port)))
 
 app.run()
