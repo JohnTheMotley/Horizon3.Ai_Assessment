@@ -4,10 +4,12 @@ class Entry(dict):
     def __init__(self, ip: str, protocol: str, port: str):
         self.ip = ip
         self.protocol = protocol
-        self.port = int(port)
+        self.port = port
         # This line is to make json serialization easier
         # Mainly prevents having to write a custom serializer and include it in dumps calls
-        dict.__init__(self, ip=self.ip, protocol=self.protocol, port=self.port)
+        # port=(int) is a hacky solution so I don't have to parse all incoming port queries to int
+        # just to return ports as an int. In a real environment I'd fix that.
+        dict.__init__(self, ip=self.ip, protocol=self.protocol, port=(int)(port))
     
     # Used to work with entries in sets as unique items
     def __hash__(self):
