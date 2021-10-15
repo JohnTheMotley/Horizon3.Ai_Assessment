@@ -4,7 +4,7 @@ class Entry(dict):
     def __init__(self, ip: str, protocol: str, port: str):
         self.ip = ip
         self.protocol = protocol
-        self.port = port
+        self.port = int(port)
         # This line is to make json serialization easier
         dict.__init__(self, ip=self.ip, protocol=self.protocol, port=self.port)
     
